@@ -4,7 +4,9 @@
 
 > **⚠️ This is a concept demonstration. All data shown in the interface is synthetic. This project is _not_ an official EFCC product or service.**
 
-### 🔗 Live demo · **https://lognetics.github.io/EFCC-Sovereign-AI-System-Godseye/**
+### 🔗 Live demo · **https://efcc-sovereign-ai-system-godseye.vercel.app/**
+
+Mirror: https://lognetics.github.io/EFCC-Sovereign-AI-System-Godseye/
 
 A unified, AI-native, sovereign financial-intelligence concept platform — transforming
 fragmented investigations into a real-time, predictive, globally-integrated financial-intelligence

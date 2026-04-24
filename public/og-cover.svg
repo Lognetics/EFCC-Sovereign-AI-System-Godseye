@@ -70,6 +70,6 @@
   <!-- Bottom strip -->
   <g transform="translate(70, 580)" fill="#64748b" font-family="system-ui" font-size="18" letter-spacing="2">
     <text>React · TypeScript · Vite · Tailwind</text>
-    <text x="860">lognetics.github.io/EFCC-Sovereign-AI-System-Godseye</text>
+    <text x="760">efcc-sovereign-ai-system-godseye.vercel.app</text>
   </g>
 </svg>
