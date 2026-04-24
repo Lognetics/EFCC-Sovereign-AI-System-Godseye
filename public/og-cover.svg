@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <radialGradient id="bg" cx="30%" cy="20%" r="80%">
+      <stop offset="0%" stop-color="#0e7490" stop-opacity="0.55"/>
+      <stop offset="60%" stop-color="#030712" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#03060c" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(34,211,238,0.25)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(34,211,238,0.12)" stroke-width="1"/>
+    </pattern>
+    <radialGradient id="iris" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="80%" stop-color="#0891b2"/>
+      <stop offset="100%" stop-color="#03060c"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <rect width="1200" height="630" fill="url(#sheen)"/>
+
+  <!-- Scan arcs -->
+  <circle cx="890" cy="315" r="300" fill="none" stroke="rgba(34,211,238,0.22)"/>
+  <circle cx="890" cy="315" r="230" fill="none" stroke="rgba(34,211,238,0.22)" stroke-dasharray="4 6"/>
+  <circle cx="890" cy="315" r="160" fill="none" stroke="rgba(34,211,238,0.4)"/>
+
+  <!-- Eye -->
+  <g transform="translate(890, 315)">
+    <ellipse rx="140" ry="50" fill="none" stroke="#22d3ee" stroke-width="2" opacity="0.6"/>
+    <ellipse rx="120" ry="42" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity="0.4"/>
+    <circle r="70" fill="url(#iris)" filter="url(#glow)"/>
+    <circle r="48" fill="url(#iris)"/>
+    <circle r="18" fill="#03060c"/>
+    <circle r="6" fill="#22d3ee"/>
+    <line x1="-260" y1="0" x2="-170" y2="0" stroke="#22d3ee" stroke-width="2" opacity="0.6"/>
+    <line x1="170" y1="0" x2="260" y2="0" stroke="#22d3ee" stroke-width="2" opacity="0.6"/>
+    <line x1="0" y1="-220" x2="0" y2="-170" stroke="#22d3ee" stroke-width="2" opacity="0.6"/>
+    <line x1="0" y1="170" x2="0" y2="220" stroke="#22d3ee" stroke-width="2" opacity="0.6"/>
+  </g>
+
+  <!-- Corner brackets -->
+  <g stroke="#22d3ee" stroke-width="3" fill="none" opacity="0.9">
+    <path d="M 40 40 L 40 80 M 40 40 L 80 40"/>
+    <path d="M 1160 40 L 1160 80 M 1160 40 L 1120 40"/>
+    <path d="M 40 590 L 40 550 M 40 590 L 80 590"/>
+    <path d="M 1160 590 L 1160 550 M 1160 590 L 1120 590"/>
+  </g>
+
+  <!-- Title block -->
+  <g transform="translate(70, 210)" fill="#e2e8f0" font-family="system-ui">
+    <text font-size="22" letter-spacing="12" fill="#67e8f9" opacity="0.9">SOVEREIGN · AI-NATIVE · LIVE</text>
+    <text y="88" font-size="96" font-weight="900" fill="#cffafe" letter-spacing="6">GOD&apos;S EYE</text>
+    <text y="138" font-size="22" letter-spacing="8" fill="#22d3ee">GE-NFIIS · EFCC SOVEREIGN AI SYSTEM</text>
+    <text y="200" font-size="20" fill="#94a3b8">National Financial Intelligence &amp; Investigation System</text>
+    <text y="232" font-size="20" fill="#94a3b8">— a unified, predictive, real-time concept platform.</text>
+    <g transform="translate(0,280)" font-size="18" letter-spacing="2" fill="#67e8f9">
+      <rect x="0" y="-18" width="640" height="32" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.5)"/>
+      <text x="14" y="4" fill="#fca5a5" font-weight="700">DEMONSTRATION UI · SYNTHETIC DATA · NOT AN OFFICIAL EFCC PRODUCT</text>
+    </g>
+  </g>
+
+  <!-- Bottom strip -->
+  <g transform="translate(70, 580)" fill="#64748b" font-family="system-ui" font-size="18" letter-spacing="2">
+    <text>React · TypeScript · Vite · Tailwind</text>
+    <text x="860">lognetics.github.io/EFCC-Sovereign-AI-System-Godseye</text>
+  </g>
+</svg>

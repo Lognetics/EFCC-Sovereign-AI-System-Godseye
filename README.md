@@ -1,10 +1,14 @@
-# EFCC SOVEREIGN AI SYSTEM
+# GOD&rsquo;S EYE &mdash; GE-NFIIS (Demonstration UI)
 
-## GOD'S EYE — National Financial Intelligence & Investigation System (GE-NFIIS)
+### A sovereign, AI-native concept for a National Financial Intelligence & Investigation System
 
-A unified, AI-native, sovereign financial-intelligence platform for the Economic &
-Financial Crimes Commission — transforming EFCC from fragmented investigations into
-a real-time, predictive, globally-integrated financial-intelligence state.
+> **⚠️ This is a concept demonstration. All data shown in the interface is synthetic. This project is _not_ an official EFCC product or service.**
+
+### 🔗 Live demo · **https://lognetics.github.io/EFCC-Sovereign-AI-System-Godseye/**
+
+A unified, AI-native, sovereign financial-intelligence concept platform — transforming
+fragmented investigations into a real-time, predictive, globally-integrated financial-intelligence
+command surface, visualized as a futuristic HUD.
 
 This repository is the interactive **operator interface** for the full system
 vision: a futuristic command-and-control UI covering every layer of the proposed

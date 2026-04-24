@@ -114,6 +114,11 @@ function BootSplash() {
         <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-slate-500">
           CLEARANCE: TOP-SECRET / SCI · FOR AUTHORIZED EFCC PERSONNEL ONLY
         </div>
+
+        <div className="mx-auto mt-2 inline-flex items-center gap-2 rounded-sm border border-red-500/40 bg-red-500/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.25em] text-red-300">
+          <span className="blink-dot h-1.5 w-1.5 bg-red-400 text-red-400" />
+          DEMONSTRATION UI · SYNTHETIC DATA · NOT AN OFFICIAL EFCC PRODUCT
+        </div>
       </div>
     </div>
   )

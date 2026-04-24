@@ -61,6 +61,12 @@ export function TopBar({ title, subtitle, chips }: { title: string; subtitle?: s
         </button>
       </div>
 
+      {/* Demo marker (search-arrival safety) */}
+      <div className="hidden items-center gap-1.5 rounded-sm border border-red-500/40 bg-red-500/10 px-2 py-1 font-mono text-[9.5px] uppercase tracking-widest text-red-300 md:inline-flex" title="Demonstration UI · synthetic data · not an official EFCC product">
+        <span className="blink-dot h-1 w-1 bg-red-400 text-red-400" />
+        DEMO
+      </div>
+
       {/* Clock */}
       <div className="hidden flex-col items-end border-l border-cyber-500/10 pl-4 md:flex">
         <div className="flex items-center gap-1.5 font-mono text-[12px] font-semibold text-cyber-200">

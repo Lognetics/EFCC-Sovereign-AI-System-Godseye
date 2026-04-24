@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lognetics.github.io/EFCC-Sovereign-AI-System-Godseye/sitemap.xml
