@@ -7,7 +7,7 @@
 
 param(
     [string] $Owner      = 'lognetics',
-    [string] $RepoName   = 'godseye-ge-nfiis',
+    [string] $RepoName   = 'EFCC-Sovereign-AI-System-Godseye',
     [ValidateSet('public','private')]
     [string] $Visibility = 'public'
 )
