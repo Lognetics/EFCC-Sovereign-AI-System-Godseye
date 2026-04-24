@@ -124,6 +124,23 @@ body {
     @apply border-red-500/50 bg-red-500/10 text-red-300 hover:bg-red-500/20 hover:border-red-400 hover:text-red-200;
   }
 
+  .btn-primary {
+    background-image: linear-gradient(135deg, #0891b2 0%, #22d3ee 50%, #67e8f9 100%);
+    color: #03060c;
+    border: 1px solid rgba(103, 232, 249, 0.7);
+    box-shadow: 0 10px 30px -10px rgba(34, 211, 238, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 40px -10px rgba(34, 211, 238, 0.9), inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+    filter: brightness(1.08);
+  }
+  .btn-primary:active {
+    transform: translateY(0);
+    filter: brightness(0.95);
+  }
+
   .stat-value {
     @apply font-display text-3xl font-bold text-cyber-200 leading-none tracking-tight;
     text-shadow: 0 0 18px rgba(34, 211, 238, 0.35);

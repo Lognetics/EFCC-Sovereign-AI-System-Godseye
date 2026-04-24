@@ -1,7 +1,7 @@
 import {
   Activity, AlertTriangle, TrendingUp, ShieldCheck, Layers,
   Fingerprint, Cpu, Network, Clock, Gauge, Crosshair,
-  Eye, Radio, Satellite, Target
+  Eye, Radio, Satellite, Target, Download, Snowflake
 } from 'lucide-react'
 import { TopBar } from '../components/layout/TopBar'
 import { Panel, InlineStat } from '../components/widgets/Panel'
@@ -15,78 +15,46 @@ import {
   LIVE_METRICS, ALERTS, CASES, CRIMETYPE_DISTRIBUTION,
   formatNaira, riskColor, riskTextClass
 } from '../data/mockData'
+import { useToast } from '../components/system/Toast'
+import { useModal } from '../components/system/Modal'
+import { alertDetail, caseDetail } from '../components/system/DetailViews'
+import { useMemo, useState } from 'react'
 
-export function CommandCenter() {
+export function CommandCenter({ onOpenCommand }: { onOpenCommand?: () => void }) {
+  const toast = useToast()
+  const modal = useModal()
+
   return (
     <div className="flex h-full flex-col">
       <TopBar
         title="Command & Control Center"
         subtitle="EFCC War Room · GE-NFIIS Unified Operations · Live"
         chips={[{ label: 'DEFCON 3', tone: 'amber' }, { label: 'LIVE', tone: 'red' }, { label: 'TS/SCI', tone: 'violet' }]}
+        onOpenCommand={onOpenCommand}
+        onBellClick={() => toast.info('12 priority alerts open', 'Opened triage queue')}
       />
 
       <div className="flex-1 overflow-auto p-4 scanlines relative">
-        {/* Top KPI strip */}
+        {/* KPI strip */}
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-6">
-          <StatCard
-            label="Ingest rate"
-            value={(LIVE_METRICS.ingestRate / 1_000_000).toFixed(2) + 'M/hr'}
-            delta="↑ 3.2% vs 24h avg"
-            icon={<Activity />}
-            sparkline={[40, 58, 44, 62, 50, 72, 68, 76, 60, 84, 78, 82]}
-          />
-          <StatCard
-            label="Entities tracked"
-            value={(LIVE_METRICS.entitiesTracked / 1_000_000).toFixed(1) + 'M'}
-            delta="4.92M new / 24h"
-            icon={<Network />}
-            tone="violet"
-            sparkline={[60, 62, 64, 68, 70, 71, 72, 74, 75, 78, 80, 82]}
-          />
-          <StatCard
-            label="Active cases"
-            value={LIVE_METRICS.activeCases.toLocaleString()}
-            delta="12 opened today"
-            icon={<Layers />}
-            sparkline={[48, 52, 55, 49, 57, 63, 60, 62, 66, 68, 72, 70]}
-          />
-          <StatCard
-            label="National risk index"
-            value={LIVE_METRICS.nationalRisk + '/100'}
-            delta="↑ 4 pts this week · ELEVATED"
-            icon={<AlertTriangle />}
-            tone="amber"
-            sparkline={[52, 55, 58, 56, 62, 65, 68, 66, 71, 72, 73, 73]}
-          />
-          <StatCard
-            label="Assets recovered (FY)"
-            value={formatNaira(LIVE_METRICS.assetsRecovered)}
-            delta={'Frozen 24h · ' + formatNaira(LIVE_METRICS.frozenLast24h)}
-            icon={<TrendingUp />}
-            tone="green"
-            sparkline={[10, 28, 34, 45, 52, 61, 68, 72, 76, 80, 82, 81]}
-          />
-          <StatCard
-            label="Predictive hit rate"
-            value={(LIVE_METRICS.predictiveHitRate * 100).toFixed(1) + '%'}
-            delta="precision · pre-incident alerts"
-            icon={<Target />}
-            tone="cyber"
-            sparkline={[70, 74, 72, 78, 80, 79, 82, 81, 83, 82, 81, 81]}
-          />
+          <StatCard label="Ingest rate" value={(LIVE_METRICS.ingestRate / 1_000_000).toFixed(2) + 'M/hr'} delta="↑ 3.2% vs 24h avg" icon={<Activity />} sparkline={[40,58,44,62,50,72,68,76,60,84,78,82]} />
+          <StatCard label="Entities tracked" value={(LIVE_METRICS.entitiesTracked / 1_000_000).toFixed(1) + 'M'} delta="4.92M new / 24h" icon={<Network />} tone="violet" sparkline={[60,62,64,68,70,71,72,74,75,78,80,82]} />
+          <StatCard label="Active cases" value={LIVE_METRICS.activeCases.toLocaleString()} delta="12 opened today" icon={<Layers />} sparkline={[48,52,55,49,57,63,60,62,66,68,72,70]} />
+          <StatCard label="National risk index" value={LIVE_METRICS.nationalRisk + '/100'} delta="↑ 4 pts this week · ELEVATED" icon={<AlertTriangle />} tone="amber" sparkline={[52,55,58,56,62,65,68,66,71,72,73,73]} />
+          <StatCard label="Assets recovered (FY)" value={formatNaira(LIVE_METRICS.assetsRecovered)} delta={'Frozen 24h · ' + formatNaira(LIVE_METRICS.frozenLast24h)} icon={<TrendingUp />} tone="green" sparkline={[10,28,34,45,52,61,68,72,76,80,82,81]} />
+          <StatCard label="Predictive hit rate" value={(LIVE_METRICS.predictiveHitRate * 100).toFixed(1) + '%'} delta="precision · pre-incident alerts" icon={<Target />} tone="cyber" sparkline={[70,74,72,78,80,79,82,81,83,82,81,81]} />
         </div>
 
-        {/* Row 2: Map / Radar / Alerts */}
+        {/* Map / Radar / Alerts */}
         <div className="mt-3 grid grid-cols-12 gap-3">
-          {/* National Heat Map */}
           <Panel
             title="National financial crime heatmap"
             icon={<Crosshair className="h-3.5 w-3.5" />}
             tag={<span className="chip chip-amber ml-2">36 States · FCT</span>}
             actions={
               <>
-                <button className="btn-hud">Drill down</button>
-                <button className="btn-hud">Export</button>
+                <button className="btn-hud" onClick={() => toast.info('Drill-down engaged', 'Opening per-state breakdown view')}>Drill down</button>
+                <button className="btn-hud" onClick={() => toast.success('Heatmap snapshot exported', 'Saved to case packet — ready for tender')}>Export</button>
               </>
             }
             className="col-span-12 xl:col-span-6"
@@ -94,7 +62,6 @@ export function CommandCenter() {
             <NigeriaMap height={440} />
           </Panel>
 
-          {/* Threat Radar */}
           <Panel
             title="Threat radar — real-time blips"
             icon={<Satellite className="h-3.5 w-3.5" />}
@@ -106,19 +73,27 @@ export function CommandCenter() {
             </div>
           </Panel>
 
-          {/* Priority alerts */}
           <Panel
             title="Priority alerts"
             icon={<AlertTriangle className="h-3.5 w-3.5" />}
             tag={<span className="chip chip-red ml-2">{LIVE_METRICS.alertsOpen.toLocaleString()} OPEN</span>}
-            actions={<button className="btn-hud">Triage queue</button>}
+            actions={<button className="btn-hud" onClick={() => toast.info('Triage queue', `${LIVE_METRICS.alertsOpen.toLocaleString()} open · sorted by severity`)}>Triage queue</button>}
             className="col-span-12 md:col-span-5 xl:col-span-3"
             scroll
             padded={false}
           >
             <div className="divide-y divide-white/5">
               {ALERTS.slice(0, 8).map(a => (
-                <div key={a.id} className="group px-3 py-2.5 transition hover:bg-cyber-500/5">
+                <button
+                  key={a.id}
+                  className="group block w-full px-3 py-2.5 text-left transition hover:bg-cyber-500/5"
+                  onClick={() => modal.open(alertDetail(a, {
+                    onEscalate: () => { modal.close(); toast.danger('Escalated to DCP', `${a.id} promoted to critical review · briefing in 15m`) },
+                    onFreeze:    () => { modal.close(); toast.warn('Freeze request sent', '11 accounts staged for preservation order') },
+                    onOpenCase:  () => { modal.close(); toast.success('Linked to OP/SUNBURST', `${a.id} attached as witness artefact`) },
+                    onDispatch:  () => { modal.close(); toast.info('Field team dispatched', 'Zonal ops notified · ETA 00:22') }
+                  }))}
+                >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
@@ -132,19 +107,15 @@ export function CommandCenter() {
                     </div>
                     <div className="shrink-0 font-mono text-[10px] text-cyber-300">{a.confidence}%</div>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </Panel>
         </div>
 
-        {/* Row 3: Flow + Syndicate graph */}
+        {/* Flow + Syndicate graph */}
         <div className="mt-3 grid grid-cols-12 gap-3">
-          <Panel
-            title="Real-time financial flow"
-            icon={<Activity className="h-3.5 w-3.5" />}
-            className="col-span-12 xl:col-span-5"
-          >
+          <Panel title="Real-time financial flow" icon={<Activity className="h-3.5 w-3.5" />} className="col-span-12 xl:col-span-5">
             <div className="grid grid-cols-2 gap-4">
               <LiveAreaChart label="NIP transactions / sec" height={140} color="#22d3ee" />
               <LiveAreaChart label="Flagged events / min" height={140} color="#ef4444" />
@@ -159,9 +130,9 @@ export function CommandCenter() {
             tag={<span className="chip chip-red ml-2">15 entities · 20 links</span>}
             actions={
               <>
-                <button className="btn-hud">Expand</button>
-                <button className="btn-hud">Seize</button>
-                <button className="btn-hud btn-hud-danger">Escalate</button>
+                <button className="btn-hud" onClick={() => toast.info('Graph expanded', 'Peripheral tier added · +8 nodes')}>Expand</button>
+                <button className="btn-hud" onClick={() => toast.warn('Seizure order drafted', 'Counsel notified · awaiting court')}>Seize</button>
+                <button className="btn-hud btn-hud-danger" onClick={() => toast.danger('Case escalated', 'DCP Okonkwo · AGF copied')}>Escalate</button>
               </>
             }
             className="col-span-12 xl:col-span-7"
@@ -170,30 +141,23 @@ export function CommandCenter() {
           </Panel>
         </div>
 
-        {/* Row 4: Cases · Crime Mix · Posture */}
+        {/* Cases · Crime Mix · Posture */}
         <div className="mt-3 grid grid-cols-12 gap-3">
-          <Panel
-            title="Top active cases"
-            icon={<Layers className="h-3.5 w-3.5" />}
-            tag={<span className="chip ml-2">{CASES.length} of {LIVE_METRICS.activeCases.toLocaleString()}</span>}
-            className="col-span-12 xl:col-span-6"
-            padded={false}
-          >
+          <Panel title="Top active cases" icon={<Layers className="h-3.5 w-3.5" />} tag={<span className="chip ml-2">{CASES.length} of {LIVE_METRICS.activeCases.toLocaleString()}</span>} className="col-span-12 xl:col-span-6" padded={false}>
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>CASE</th>
-                  <th>LEAD</th>
-                  <th>STAGE</th>
-                  <th>ENTITIES</th>
-                  <th className="text-right">VALUE</th>
-                  <th className="text-right">PROGRESS</th>
-                  <th>UPDATED</th>
+                  <th>CASE</th><th>LEAD</th><th>STAGE</th><th>ENTITIES</th>
+                  <th className="text-right">VALUE</th><th className="text-right">PROGRESS</th><th>UPDATED</th>
                 </tr>
               </thead>
               <tbody>
                 {CASES.slice(0, 7).map(c => (
-                  <tr key={c.id}>
+                  <tr key={c.id} className="cursor-pointer" onClick={() => modal.open(caseDetail(c, {
+                    onAssign: () => { modal.close(); toast.success('Assignment updated', `${c.code} reassigned`) },
+                    onReport: () => { modal.close(); toast.success('Dossier generating', 'Copilot M-NLP-12 · ETA 04:00') },
+                    onClose:  () => { modal.close(); toast.warn('Close requires panel review', 'Pending DCP sign-off') }
+                  }))}>
                     <td>
                       <div className="font-display text-[12px] text-cyber-100">{c.code}</div>
                       <div className="text-[10px] text-slate-500">{c.title}</div>
@@ -217,23 +181,12 @@ export function CommandCenter() {
             </table>
           </Panel>
 
-          <Panel
-            title="Crime-type mix · last 30 days"
-            icon={<Gauge className="h-3.5 w-3.5" />}
-            className="col-span-12 md:col-span-6 xl:col-span-3"
-          >
+          <Panel title="Crime-type mix · last 30 days" icon={<Gauge className="h-3.5 w-3.5" />} className="col-span-12 md:col-span-6 xl:col-span-3">
             <DonutChart data={CRIMETYPE_DISTRIBUTION} size={200} />
           </Panel>
 
-          <Panel
-            title="Operational posture"
-            icon={<ShieldCheck className="h-3.5 w-3.5" />}
-            className="col-span-12 md:col-span-6 xl:col-span-3"
-          >
-            <RadarChart
-              axes={['Ingest', 'Detect', 'Trace', 'Recover', 'Prosecute', 'Prevent']}
-              values={[92, 88, 84, 71, 68, 81]}
-            />
+          <Panel title="Operational posture" icon={<ShieldCheck className="h-3.5 w-3.5" />} className="col-span-12 md:col-span-6 xl:col-span-3">
+            <RadarChart axes={['Ingest', 'Detect', 'Trace', 'Recover', 'Prosecute', 'Prevent']} values={[92,88,84,71,68,81]} />
             <div className="mt-3 space-y-2">
               <BarGauge label="Zero-trust posture" value={97} color="#10b981" right="97%" />
               <BarGauge label="Model health" value={93} color="#22d3ee" right="93%" />
@@ -243,23 +196,13 @@ export function CommandCenter() {
           </Panel>
         </div>
 
-        {/* Row 5: Live stream + Ops posture */}
+        {/* Live stream + Ops posture */}
         <div className="mt-3 grid grid-cols-12 gap-3">
-          <Panel
-            title="Live transaction monitor"
-            icon={<Radio className="h-3.5 w-3.5" />}
-            tag={<span className="chip chip-red ml-2">LIVE · NIP · SWIFT · CBDC · CRYPTO</span>}
-            actions={<button className="btn-hud">Open radar</button>}
-            className="col-span-12 xl:col-span-8"
-          >
+          <Panel title="Live transaction monitor" icon={<Radio className="h-3.5 w-3.5" />} tag={<span className="chip chip-red ml-2">LIVE · NIP · SWIFT · CBDC · CRYPTO</span>} actions={<button className="btn-hud" onClick={() => toast.info('Opening radar', 'Switching to Real-time Monitoring Radar')}>Open radar</button>} className="col-span-12 xl:col-span-8">
             <LiveTransactionFeed rows={9} hz={1200} showHeader={false} />
           </Panel>
 
-          <Panel
-            title="Ops snapshot"
-            icon={<Eye className="h-3.5 w-3.5" />}
-            className="col-span-12 xl:col-span-4"
-          >
+          <Panel title="Ops snapshot" icon={<Eye className="h-3.5 w-3.5" />} className="col-span-12 xl:col-span-4">
             <div className="grid grid-cols-2 gap-4">
               <InlineStat label="Models serving" value={LIVE_METRICS.modelsServing} sub="47 / 47 healthy" tone="violet" />
               <InlineStat label="Uptime" value={LIVE_METRICS.uptime + '%'} sub="30-day" tone="ok" />
@@ -300,13 +243,9 @@ export function CommandCenter() {
           </Panel>
         </div>
 
-        {/* Row 6: Identity / Behavior spotlight */}
+        {/* Briefing row */}
         <div className="mt-3 grid grid-cols-12 gap-3">
-          <Panel
-            title="Identity verification spotlight"
-            icon={<Fingerprint className="h-3.5 w-3.5" />}
-            className="col-span-12 md:col-span-6 xl:col-span-4"
-          >
+          <Panel title="Identity verification spotlight" icon={<Fingerprint className="h-3.5 w-3.5" />} className="col-span-12 md:col-span-6 xl:col-span-4">
             <div className="grid grid-cols-3 gap-3">
               {[
                 { label: 'NIN matches', v: '3.2M', t: 'today', ok: true },
@@ -325,11 +264,7 @@ export function CommandCenter() {
             </div>
           </Panel>
 
-          <Panel
-            title="Anomaly spotlight — last hour"
-            icon={<AlertTriangle className="h-3.5 w-3.5" />}
-            className="col-span-12 md:col-span-6 xl:col-span-4"
-          >
+          <Panel title="Anomaly spotlight — last hour" icon={<AlertTriangle className="h-3.5 w-3.5" />} className="col-span-12 md:col-span-6 xl:col-span-4">
             <div className="space-y-2">
               {[
                 { label: 'Structured deposits', c: 324, pct: 78, tone: '#ef4444' },
@@ -352,20 +287,45 @@ export function CommandCenter() {
             </div>
           </Panel>
 
-          <Panel
-            title="Classified briefing — auto-generated 09:02 WAT"
-            icon={<Eye className="h-3.5 w-3.5" />}
-            tag={<span className="chip chip-violet ml-2">AI · Signed by M-NLP-12</span>}
-            className="col-span-12 xl:col-span-4"
-          >
+          <Panel title="Classified briefing — auto-generated 09:02 WAT" icon={<Eye className="h-3.5 w-3.5" />} tag={<span className="chip chip-violet ml-2">AI · Signed by M-NLP-12</span>} className="col-span-12 xl:col-span-4">
             <div className="font-mono text-[11px] leading-relaxed text-slate-300">
               <p><span className="text-cyber-300">[CONFIDENTIAL · TS/SCI]</span> — The system observes a <span className="text-red-300">34% surge</span> in high-velocity transactions converging on OP/SUNBURST (subsidy diversion ring, 9 ministries). Graph clustering indicates 3 new ghost-director entities entering the peripheral tier in the last 72h.</p>
               <p className="mt-2">Cross-chain exits through <span className="text-yellow-300">bc1q…8fqrz → 0x9aF3…E2c1</span> have resumed after a 9-day dormancy. Probability of mixer cycle completion next 24h: <span className="text-red-300">0.87</span>.</p>
               <p className="mt-2">Predictive engine recommends: pre-emptive request for a <span className="text-cyber-200">court-authorized freeze</span> on 11 Nigerian bank accounts implicated in the suspected peripheral tier, and an international preservation notice via INTERPOL I-24/7.</p>
             </div>
             <div className="mt-3 flex gap-2">
-              <button className="btn-hud">Open full brief</button>
-              <button className="btn-hud btn-hud-danger">Escalate to DCP</button>
+              <button className="btn-hud" onClick={() => modal.open({
+                title: 'Classified briefing · 09:02 WAT',
+                body: (
+                  <div className="space-y-3 text-[12.5px] leading-relaxed text-slate-300">
+                    <p>Full 214-page briefing summarized into 12 pages of executive findings. Prepared by <span className="text-cyber-200">M-NLP-12 · Sovereign Legal LLM v0.9.4</span> with citations to the Evidence Act 2011 §84.</p>
+                    <h4 className="mt-3 font-display text-[13px] text-cyber-200 uppercase tracking-widest">Key findings</h4>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li>+34% surge in high-velocity flows converging on OP/SUNBURST.</li>
+                      <li>3 new ghost-director entities entering the peripheral tier in last 72h.</li>
+                      <li>Cross-chain exit path through bc1q…8fqrz → 0x9aF3…E2c1 resumed after 9-day dormancy.</li>
+                      <li>Probability of mixer cycle completion next 24h: 0.87.</li>
+                      <li>Trade mis-invoicing exposure on cashew lot 41% below benchmark.</li>
+                    </ul>
+                    <h4 className="mt-3 font-display text-[13px] text-cyber-200 uppercase tracking-widest">Recommended actions</h4>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li>Pre-emptive court-authorized freeze on 11 Nigerian bank accounts.</li>
+                      <li>Preservation notice via INTERPOL I-24/7 and Egmont.</li>
+                      <li>Request for MLAT assistance — UAE + UK.</li>
+                      <li>Triage deepfake blocks on PalmPay / Kuda / Access onboarding.</li>
+                    </ul>
+                  </div>
+                ),
+                footer: (
+                  <>
+                    <button className="btn-hud" onClick={() => { modal.close(); toast.success('Brief exported', 'PDF queued to secure outbox') }}><Download className="inline h-3 w-3 mr-1" /> Export PDF</button>
+                    <button className="btn-hud btn-hud-danger" onClick={() => { modal.close(); toast.danger('Escalated to DCP', 'Brief shared with DCP A. Okonkwo') }}>Escalate</button>
+                  </>
+                ),
+                width: 760,
+                tone: 'violet'
+              })}>Open full brief</button>
+              <button className="btn-hud btn-hud-danger" onClick={() => toast.danger('Escalated', 'DCP A. Okonkwo notified — briefing queued for 09:15')}>Escalate to DCP</button>
             </div>
           </Panel>
         </div>

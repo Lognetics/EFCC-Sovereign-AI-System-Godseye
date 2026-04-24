@@ -1,4 +1,6 @@
 import { ShieldCheck, KeyRound, Lock, UserCog, Activity, AlertTriangle, Bug, Network } from 'lucide-react'
+import { useToast } from '../components/system/Toast'
+import { useModal } from '../components/system/Modal'
 import { TopBar } from '../components/layout/TopBar'
 import { Panel, InlineStat } from '../components/widgets/Panel'
 import { StatCard } from '../components/widgets/StatCard'
@@ -25,6 +27,38 @@ const INSIDER_CASES = [
 ]
 
 export function Defense() {
+  const toast = useToast()
+  const modal = useModal()
+
+  function openInsider(c: typeof INSIDER_CASES[number]) {
+    modal.open({
+      title: <span>Insider case · {c.id}</span>,
+      body: (
+        <div className="space-y-3 text-[12.5px] text-slate-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-display text-[16px] text-slate-100">{c.user}</div>
+              <div className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{c.alert}</div>
+            </div>
+            <div className="text-right">
+              <div className="stat-label">risk</div>
+              <div className={'font-display text-[22px] font-bold ' + (c.risk > 90 ? 'text-red-300' : c.risk > 70 ? 'text-amber-300' : 'text-cyber-200')}>{c.risk}/100</div>
+            </div>
+          </div>
+          <p>Detection fired on the <span className="text-cyber-200">behavioral-anomaly (user)</span> model. Session replay and query audit are preserved in the WORM ledger. Response is gated by a two-engineer quorum.</p>
+        </div>
+      ),
+      footer: (
+        <>
+          <button className="btn-hud" onClick={() => { modal.close(); toast.info('Interview scheduled', 'HR + Legal notified · secure room booked') }}>Schedule interview</button>
+          <button className="btn-hud" onClick={() => { modal.close(); toast.warn('Session revoked', `${c.user} active sessions terminated`) }}>Revoke sessions</button>
+          <button className="btn-hud btn-hud-danger" onClick={() => { modal.close(); toast.danger('Escalated to ONSA', 'External review engaged') }}>Escalate to ONSA</button>
+        </>
+      ),
+      tone: c.risk > 90 ? 'danger' : 'violet'
+    })
+  }
+
   return (
     <div className="flex h-full flex-col">
       <TopBar
@@ -100,7 +134,7 @@ export function Defense() {
               </thead>
               <tbody>
                 {INSIDER_CASES.map(c => (
-                  <tr key={c.id}>
+                  <tr key={c.id} className="cursor-pointer" onClick={() => openInsider(c)}>
                     <td className="font-mono text-slate-500">{c.id}</td>
                     <td className="text-slate-200">{c.user}</td>
                     <td>

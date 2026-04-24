@@ -9,5 +9,18 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true
+  },
+  build: {
+    chunkSizeWarningLimit: 1600,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor':  ['react', 'react-dom'],
+          'motion':         ['framer-motion'],
+          'three':          ['three', '@react-three/fiber', '@react-three/drei'],
+          'icons':          ['lucide-react']
+        }
+      }
+    }
   }
 })

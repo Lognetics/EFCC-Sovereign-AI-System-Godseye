@@ -1,4 +1,6 @@
 import { BrainCircuit, Sparkles, Target, ShieldAlert, Eye, Users, Activity, Atom, Flame, UserX } from 'lucide-react'
+import { useToast } from '../components/system/Toast'
+import { useModal } from '../components/system/Modal'
 import { TopBar } from '../components/layout/TopBar'
 import { Panel } from '../components/widgets/Panel'
 import { StatCard } from '../components/widgets/StatCard'
@@ -7,6 +9,44 @@ import { MODELS } from '../data/mockData'
 import { Waveform } from '../components/widgets/Charts'
 
 export function AIBrain() {
+  const toast = useToast()
+  const modal = useModal()
+
+  function openModel(m: typeof MODELS[number]) {
+    modal.open({
+      title: <span>Model · {m.id}</span>,
+      body: (
+        <div className="space-y-3 text-[12.5px] text-slate-300">
+          <div>
+            <div className="font-display text-[16px] text-cyber-200">{m.name}</div>
+            <div className="mt-1 font-mono text-[10.5px] uppercase tracking-widest text-slate-500">{m.framework} · {m.version} · {m.status}</div>
+          </div>
+          <div className="grid grid-cols-4 gap-3">
+            {[
+              { k: 'AUC',      v: m.auc ? m.auc.toFixed(3) : '—' },
+              { k: 'Precision', v: m.precision ? m.precision.toFixed(3) : '—' },
+              { k: 'Recall',    v: m.recall ? m.recall.toFixed(3) : '—' },
+              { k: 'Drift',     v: m.drift.toFixed(3), tone: m.drift > 0.02 ? '#f59e0b' : '#10b981' }
+            ].map(x => (
+              <div key={x.k} className="rounded-md border border-white/5 bg-white/[0.02] p-2.5 text-center">
+                <div className="stat-label">{x.k}</div>
+                <div className="mt-1 font-display text-[17px] font-bold" style={{ color: (x as any).tone ?? '#67e8f9' }}>{x.v}</div>
+              </div>
+            ))}
+          </div>
+          <p>Model is serving production traffic. Fairness and bias audits are scheduled quarterly; latest audit passed on 2026-Q1 with subgroup deviation ≤ 1.2%.</p>
+        </div>
+      ),
+      footer: (
+        <>
+          <button className="btn-hud" onClick={() => { modal.close(); toast.info('Canary rollout queued', `${m.id} → 10% traffic`) }}>Canary rollout</button>
+          <button className="btn-hud" onClick={() => { modal.close(); toast.success('Explanations exported', 'SHAP contributions · PDF ready') }}>Export SHAP</button>
+          <button className="btn-hud btn-hud-danger" onClick={() => { modal.close(); toast.warn('Rollback staged', `${m.id} staged to v${(parseFloat(m.version.replace(/[^\d.]/g, '')) - 0.1).toFixed(1)}`) }}>Rollback</button>
+        </>
+      )
+    })
+  }
+
   return (
     <div className="flex h-full flex-col">
       <TopBar
@@ -80,8 +120,8 @@ export function AIBrain() {
             icon={<BrainCircuit className="h-3.5 w-3.5" />}
             actions={
               <>
-                <button className="btn-hud">Deploy canary</button>
-                <button className="btn-hud">Rollback</button>
+                <button className="btn-hud" onClick={() => toast.info('Canary staged', 'M-FUS-01 v0.4.1 → 18% traffic · monitoring drift')}>Deploy canary</button>
+                <button className="btn-hud" onClick={() => toast.warn('Rollback staged', 'Requires two-engineer quorum')}>Rollback</button>
               </>
             }
             className="col-span-12"
@@ -103,7 +143,7 @@ export function AIBrain() {
               </thead>
               <tbody>
                 {MODELS.map(m => (
-                  <tr key={m.id}>
+                  <tr key={m.id} className="cursor-pointer" onClick={() => openModel(m)}>
                     <td className="font-mono text-[10px] text-slate-500">{m.id}</td>
                     <td className="text-slate-100">{m.name}</td>
                     <td className="text-slate-400">{m.framework}</td>

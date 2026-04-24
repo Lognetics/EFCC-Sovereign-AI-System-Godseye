@@ -1,4 +1,6 @@
 import { GraduationCap, Users, Award, Rocket, Building2, Medal, Briefcase } from 'lucide-react'
+import { useToast } from '../components/system/Toast'
+import { useModal } from '../components/system/Modal'
 import { TopBar } from '../components/layout/TopBar'
 import { Panel, InlineStat } from '../components/widgets/Panel'
 import { StatCard } from '../components/widgets/StatCard'
@@ -29,6 +31,34 @@ const ROLES = [
 ]
 
 export function Academy() {
+  const toast = useToast()
+  const modal = useModal()
+
+  function openProgram(p: typeof TRAINING_PROGRAMS[number]) {
+    modal.open({
+      title: <span>Program · {p.code}</span>,
+      body: (
+        <div className="space-y-3 text-[12.5px] text-slate-300">
+          <div>
+            <div className="font-display text-[16px] text-cyber-200">{p.name}</div>
+            <div className="mt-1 font-mono text-[10.5px] uppercase tracking-widest text-slate-500">{p.level} · {p.weeks} weeks · {p.accred}</div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-md border border-white/5 bg-white/[0.02] p-2.5 text-center"><div className="stat-label">Enrolled</div><div className="mt-1 font-display text-[18px] font-bold text-cyber-200">{p.enrolled}</div></div>
+            <div className="rounded-md border border-white/5 bg-white/[0.02] p-2.5 text-center"><div className="stat-label">Graduated</div><div className="mt-1 font-display text-[18px] font-bold text-emerald-300">{p.graduated}</div></div>
+            <div className="rounded-md border border-white/5 bg-white/[0.02] p-2.5 text-center"><div className="stat-label">Pass rate</div><div className="mt-1 font-display text-[18px] font-bold text-cyber-200">{Math.round((p.graduated / p.enrolled) * 100)}%</div></div>
+          </div>
+        </div>
+      ),
+      footer: (
+        <>
+          <button className="btn-hud" onClick={() => { modal.close(); toast.success('Enrolment opened', 'New cohort scheduled next quarter') }}>Open enrolment</button>
+          <button className="btn-hud" onClick={() => { modal.close(); toast.info('Syllabus exported', 'PDF available in downloads') }}>Export syllabus</button>
+        </>
+      )
+    })
+  }
+
   return (
     <div className="flex h-full flex-col">
       <TopBar
@@ -64,7 +94,7 @@ export function Academy() {
               </thead>
               <tbody>
                 {TRAINING_PROGRAMS.map(p => (
-                  <tr key={p.code}>
+                  <tr key={p.code} className="cursor-pointer" onClick={() => openProgram(p)}>
                     <td className="font-mono text-slate-500">{p.code}</td>
                     <td className="text-slate-200">{p.name}</td>
                     <td>

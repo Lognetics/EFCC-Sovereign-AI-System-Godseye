@@ -1,4 +1,5 @@
 import { Database, Layers, Network, Server, GitBranch, Lock, Zap, PlugZap, Workflow } from 'lucide-react'
+import { useToast } from '../components/system/Toast'
 import { TopBar } from '../components/layout/TopBar'
 import { Panel, InlineStat } from '../components/widgets/Panel'
 import { StatCard } from '../components/widgets/StatCard'
@@ -6,6 +7,8 @@ import { INGEST_FEEDS, AGENCIES, LIVE_METRICS } from '../data/mockData'
 import { HeatmapGrid, BarGauge } from '../components/widgets/Charts'
 
 export function DataFusion() {
+  const toast = useToast()
+
   return (
     <div className="flex h-full flex-col">
       <TopBar
@@ -30,8 +33,8 @@ export function DataFusion() {
             tag={<span className="chip chip-green ml-2">ALL GREEN</span>}
             actions={
               <>
-                <button className="btn-hud">Replay</button>
-                <button className="btn-hud">Connector SDK</button>
+                <button className="btn-hud" onClick={() => toast.info('Replay started', 'Stream replay from T-30 min initiated')}>Replay</button>
+                <button className="btn-hud" onClick={() => toast.info('Connector SDK', 'Docs opened · scaffold generator ready')}>Connector SDK</button>
               </>
             }
             className="col-span-12 xl:col-span-8"

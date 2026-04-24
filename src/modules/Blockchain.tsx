@@ -1,4 +1,6 @@
 import { Link2, Wallet, ShieldAlert, Coins, GitMerge, Search, TrendingDown, Globe } from 'lucide-react'
+import { useToast } from '../components/system/Toast'
+import { useModal } from '../components/system/Modal'
 import { TopBar } from '../components/layout/TopBar'
 import { Panel, InlineStat } from '../components/widgets/Panel'
 import { StatCard } from '../components/widgets/StatCard'
@@ -33,6 +35,42 @@ const SMART_CONTRACTS = [
 ]
 
 export function Blockchain() {
+  const toast = useToast()
+  const modal = useModal()
+
+  function openWallet(w: typeof WATCHLIST[number]) {
+    modal.open({
+      title: <span>Wallet · {w.addr}</span>,
+      body: (
+        <div className="space-y-3 text-[12.5px] text-slate-300">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-md border border-white/5 bg-white/[0.02] p-2.5">
+              <div className="stat-label">Chain</div>
+              <div className="mt-1 font-display text-[15px] text-cyber-200">{w.chain}</div>
+            </div>
+            <div className="rounded-md border border-white/5 bg-white/[0.02] p-2.5">
+              <div className="stat-label">Cluster</div>
+              <div className="mt-1 font-display text-[15px] text-cyber-200">{w.cluster}</div>
+            </div>
+            <div className="rounded-md border border-white/5 bg-white/[0.02] p-2.5">
+              <div className="stat-label">Balance</div>
+              <div className="mt-1 font-display text-[15px] text-cyber-200">{w.balance}</div>
+              <div className="font-mono text-[10px] text-slate-500">{w.usd}</div>
+            </div>
+          </div>
+          <p>Tagged <span className="text-red-300">{w.tag}</span> by graph classifier (prob. 0.94). Cross-chain exit path traces via 4 hops to fiat off-ramp at <span className="text-amber-300">ProsperPay NG</span>.</p>
+        </div>
+      ),
+      footer: (
+        <>
+          <button className="btn-hud" onClick={() => { modal.close(); toast.success('Trace opened', 'Full 4-hop path visualized in sub-graph view') }}>Open sub-graph</button>
+          <button className="btn-hud" onClick={() => { modal.close(); toast.info('Added to watchlist', `${w.addr} flagged for real-time monitoring`) }}>Add to watchlist</button>
+          <button className="btn-hud btn-hud-danger" onClick={() => { modal.close(); toast.danger('Freeze requested', 'VASP notified · preservation in progress') }}>Request freeze</button>
+        </>
+      )
+    })
+  }
+
   return (
     <div className="flex h-full flex-col">
       <TopBar
@@ -115,7 +153,7 @@ export function Blockchain() {
             title="Cross-chain trace · bc1q…8fqrz → Exit"
             icon={<Search className="h-3.5 w-3.5" />}
             tag={<span className="chip chip-red ml-2">4-hop laundering confirmed</span>}
-            actions={<button className="btn-hud">Open sub-graph</button>}
+            actions={<button className="btn-hud" onClick={() => toast.info('Sub-graph opened', 'Full 4-hop cross-chain trace rendered')}>Open sub-graph</button>}
             className="col-span-12 xl:col-span-7"
           >
             <TracePath />
@@ -142,7 +180,7 @@ export function Blockchain() {
               </thead>
               <tbody>
                 {WATCHLIST.map(w => (
-                  <tr key={w.addr}>
+                  <tr key={w.addr} className="cursor-pointer" onClick={() => openWallet(w)}>
                     <td className="font-mono text-slate-200">{w.addr}</td>
                     <td>{w.chain}</td>
                     <td className="text-slate-400">{w.cluster}</td>

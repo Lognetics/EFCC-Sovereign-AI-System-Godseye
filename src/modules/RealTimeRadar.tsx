@@ -1,4 +1,7 @@
 import { Radar, Waves, Zap, Snowflake, Activity, AlertTriangle, ShieldAlert, Siren } from 'lucide-react'
+import { useState } from 'react'
+import { useToast } from '../components/system/Toast'
+import { useModal } from '../components/system/Modal'
 import { TopBar } from '../components/layout/TopBar'
 import { Panel, InlineStat } from '../components/widgets/Panel'
 import { StatCard } from '../components/widgets/StatCard'
@@ -28,6 +31,40 @@ const FROZEN = [
 ]
 
 export function RealTimeRadar() {
+  const toast = useToast()
+  const modal = useModal()
+  const [rules, setRules] = useState(() => RULE_ENGINE.map(r => ({ ...r, enabled: true })))
+
+  function toggleRule(id: string) {
+    setRules(prev => prev.map(r => r.id === id ? { ...r, enabled: !r.enabled } : r))
+    const r = rules.find(x => x.id === id)
+    toast.info(r?.enabled ? 'Rule disabled' : 'Rule enabled', `${id} · ${r?.name}`)
+  }
+
+  function onFrozenClick(f: any) {
+    modal.open({
+      title: <span>Frozen · {f.acct}</span>,
+      body: (
+        <div className="space-y-3 text-[12.5px] text-slate-300">
+          <div className="rounded-md border border-red-500/30 bg-red-500/10 p-3">
+            <div className="font-display text-[15px] text-red-300">{f.holder}</div>
+            <div className="mt-1 font-mono text-[10.5px] uppercase tracking-widest text-slate-500">
+              {f.reason} · at {f.time}
+            </div>
+            <div className="mt-2 font-display text-[20px] font-bold text-red-300">{f.amount}</div>
+          </div>
+          <p>Preservation order automatically drafted and queued for court filing. Two-analyst quorum enforced — a human officer must approve before any downstream action.</p>
+        </div>
+      ),
+      footer: (
+        <>
+          <button className="btn-hud" onClick={() => { modal.close(); toast.success('Unfreeze staged', 'Analyst quorum notified') }}>Stage unfreeze</button>
+          <button className="btn-hud btn-hud-danger" onClick={() => { modal.close(); toast.danger('Transferred to OP/SUNBURST', 'Case folder updated') }}>Move to case</button>
+        </>
+      )
+    })
+  }
+
   return (
     <div className="flex h-full flex-col">
       <TopBar
@@ -77,21 +114,23 @@ export function RealTimeRadar() {
           <Panel
             title="Rule-engine heatboard"
             icon={<Zap className="h-3.5 w-3.5" />}
+            tag={<span className="chip ml-2">{rules.filter(r => r.enabled).length}/{rules.length} active</span>}
             className="col-span-12 md:col-span-6 xl:col-span-4"
           >
             <div className="space-y-2">
-              {RULE_ENGINE.map(r => (
-                <div key={r.id}>
+              {rules.map(r => (
+                <button key={r.id} onClick={() => toggleRule(r.id)} className="block w-full text-left group">
                   <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-widest">
-                    <span className="text-slate-400">{r.id} · {r.name}</span>
-                    <span style={{ color: r.tone }}>{r.firing}</span>
+                    <span className={'transition ' + (r.enabled ? 'text-slate-300' : 'text-slate-600 line-through')}>{r.id} · {r.name}</span>
+                    <span style={{ color: r.enabled ? r.tone : '#475569' }}>{r.enabled ? r.firing : '—'}</span>
                   </div>
                   <div className="progress-track mt-1">
-                    <div className="progress-fill" style={{ width: r.pct + '%', background: `linear-gradient(90deg, ${r.tone}99, ${r.tone})` }} />
+                    <div className="progress-fill transition-all" style={{ width: r.enabled ? r.pct + '%' : '0%', background: `linear-gradient(90deg, ${r.tone}99, ${r.tone})` }} />
                   </div>
-                </div>
+                </button>
               ))}
             </div>
+            <div className="mt-3 font-mono text-[9.5px] uppercase tracking-widest text-slate-500">Click to toggle</div>
           </Panel>
 
           <Panel
@@ -104,7 +143,7 @@ export function RealTimeRadar() {
               <thead><tr><th>TIME</th><th>ACCOUNT</th><th>HOLDER</th><th>AMOUNT</th><th>REASON</th></tr></thead>
               <tbody>
                 {FROZEN.map(f => (
-                  <tr key={f.id}>
+                  <tr key={f.id} className="cursor-pointer" onClick={() => onFrozenClick(f)}>
                     <td className="text-slate-500">{f.time}</td>
                     <td className="text-slate-200">{f.acct}</td>
                     <td>{f.holder}</td>

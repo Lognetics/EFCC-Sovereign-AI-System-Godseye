@@ -1,4 +1,6 @@
 import { Scale, Gavel, Lock, Eye, FileCheck2, UserCheck2, BookOpenCheck, AlertOctagon, Scroll } from 'lucide-react'
+import { useToast } from '../components/system/Toast'
+import { useModal } from '../components/system/Modal'
 import { TopBar } from '../components/layout/TopBar'
 import { Panel, InlineStat } from '../components/widgets/Panel'
 import { StatCard } from '../components/widgets/StatCard'
@@ -22,6 +24,35 @@ const RIGHTS = [
 ]
 
 export function Governance() {
+  const toast = useToast()
+  const modal = useModal()
+
+  function openWarrant(w: typeof WARRANTS[number]) {
+    modal.open({
+      title: <span>Warrant · {w.id}</span>,
+      body: (
+        <div className="space-y-3 text-[12.5px] text-slate-300">
+          <div className="rounded-md border border-cyber-500/20 bg-cyber-500/5 p-3">
+            <div className="font-display text-[16px] text-cyber-200">{w.subj}</div>
+            <div className="mt-1 font-mono text-[10.5px] uppercase tracking-widest text-slate-500">{w.court}</div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-md border border-white/5 bg-white/[0.02] p-2.5"><div className="stat-label">Granted</div><div className="mt-1 font-display text-[14px] text-cyber-200">{w.granted}</div></div>
+            <div className="rounded-md border border-white/5 bg-white/[0.02] p-2.5"><div className="stat-label">Expires</div><div className="mt-1 font-display text-[14px] text-amber-300">{w.expires}</div></div>
+            <div className="rounded-md border border-white/5 bg-white/[0.02] p-2.5"><div className="stat-label">Scope</div><div className="mt-1 font-display text-[14px] text-cyber-200">{w.scope}</div></div>
+          </div>
+          <p>Warrant enforces the data-access policy gate. Any query outside the granted scope is denied automatically and logged to the WORM audit ledger.</p>
+        </div>
+      ),
+      footer: (
+        <>
+          <button className="btn-hud" onClick={() => { modal.close(); toast.info('Extension requested', 'Renewal filing prepared for court') }}>Request extension</button>
+          <button className="btn-hud" onClick={() => { modal.close(); toast.success('Warrant exported', 'PDF sealed for counsel') }}>Export</button>
+        </>
+      )
+    })
+  }
+
   return (
     <div className="flex h-full flex-col">
       <TopBar
@@ -103,7 +134,7 @@ export function Governance() {
               </thead>
               <tbody>
                 {WARRANTS.map(w => (
-                  <tr key={w.id}>
+                  <tr key={w.id} className="cursor-pointer" onClick={() => openWarrant(w)}>
                     <td className="font-mono text-slate-500">{w.id}</td>
                     <td className="text-slate-200">{w.subj}</td>
                     <td>{w.court}</td>

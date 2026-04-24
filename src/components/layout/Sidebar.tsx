@@ -11,11 +11,13 @@ import {
   Scale,
   GraduationCap,
   Activity,
-  Eye
+  Eye,
+  Home,
+  Orbit
 } from 'lucide-react'
-import type { ModuleKey } from '../../App'
+import type { ModuleKey } from '../../routes'
 
-const MODULES: { key: ModuleKey; label: string; sub: string; icon: any; badge?: string }[] = [
+const MOD: { key: ModuleKey; label: string; sub: string; icon: any; badge?: string }[] = [
   { key: 'command',    label: 'Command & Control',          sub: 'War Room · Live Ops',                icon: LayoutDashboard, badge: 'LIVE' },
   { key: 'fusion',     label: 'Data Fusion & Digital Twin', sub: '18 feeds · 148M entities',           icon: Database },
   { key: 'brain',      label: 'AI Intelligence Core',       sub: "God's Eye Brain · 47 models",        icon: BrainCircuit },
@@ -29,21 +31,21 @@ const MODULES: { key: ModuleKey; label: string; sub: string; icon: any; badge?: 
   { key: 'academy',    label: 'Human Capital · Academy',    sub: '7 programs · 1,490 officers',        icon: GraduationCap }
 ]
 
-export function Sidebar({ active, setActive }: { active: ModuleKey; setActive: (m: ModuleKey) => void }) {
+export function Sidebar({ active, setActive, onHome, onDeck }: { active: ModuleKey; setActive: (m: ModuleKey) => void; onHome?: () => void; onDeck?: () => void }) {
   return (
     <aside className="relative flex w-[268px] shrink-0 flex-col border-r border-cyber-500/10 bg-ink-900/80 backdrop-blur-sm">
       {/* Brand */}
       <div className="relative flex items-center gap-3 border-b border-cyber-500/10 px-5 py-4">
-        <div className="relative flex h-10 w-10 items-center justify-center rounded-full border border-cyber-400/70 ring-cyber">
+        <button onClick={onHome} className="relative flex h-10 w-10 items-center justify-center rounded-full border border-cyber-400/70 ring-cyber transition hover:border-cyber-200" title="Return to landing">
           <Eye className="h-5 w-5 text-cyber-300" />
           <span className="absolute inset-0 targeting rounded-full" />
-        </div>
+        </button>
         <div>
           <div className="font-display text-[15px] font-bold leading-none tracking-wide text-cyber-100 text-glow">
             GOD&apos;S EYE
           </div>
           <div className="mt-1 font-mono text-[9.5px] uppercase tracking-[0.3em] text-slate-500">
-            EFCC · GE-NFIIS · v1.0
+            EFCC · GE-NFIIS · v1.1
           </div>
         </div>
       </div>
@@ -57,13 +59,23 @@ export function Sidebar({ active, setActive }: { active: ModuleKey; setActive: (
         <span className="chip chip-violet">TS/SCI</span>
       </div>
 
-      {/* Nav */}
+      {/* Quick nav */}
+      <div className="flex items-center gap-1.5 border-b border-cyber-500/10 px-3 py-2">
+        <button onClick={onHome} className="flex-1 inline-flex items-center gap-1.5 rounded-sm border border-white/10 bg-white/5 px-2 py-1 font-mono text-[9.5px] uppercase tracking-widest text-slate-300 transition hover:border-cyber-400/50 hover:text-cyber-200">
+          <Home className="h-3 w-3" /> Landing
+        </button>
+        <button onClick={onDeck} className="flex-1 inline-flex items-center gap-1.5 rounded-sm border border-cyber-500/30 bg-cyber-500/10 px-2 py-1 font-mono text-[9.5px] uppercase tracking-widest text-cyber-200 transition hover:border-cyber-400 hover:bg-cyber-500/20">
+          <Orbit className="h-3 w-3" /> 3D Deck
+        </button>
+      </div>
+
+      {/* Module list */}
       <nav className="flex-1 overflow-y-auto px-3 py-3">
         <div className="mb-2 px-2 font-mono text-[9.5px] uppercase tracking-[0.3em] text-slate-600">
           Operational Modules
         </div>
         <div className="space-y-0.5">
-          {MODULES.map(m => {
+          {MOD.map(m => {
             const Icon = m.icon
             const isActive = active === m.key
             return (
@@ -139,8 +151,8 @@ function MiniPulse() {
             <div
               className={
                 'progress-fill ' +
-                (x.c === 'red' ? 'from-red-500/60 to-red-400 [background:linear-gradient(90deg,#ef444499,#f87171)]' :
-                 x.c === 'amber' ? 'from-amber-500/60 to-amber-400 [background:linear-gradient(90deg,#f59e0b99,#fbbf24)]' : '')
+                (x.c === 'red' ? '[background:linear-gradient(90deg,#ef444499,#f87171)]' :
+                 x.c === 'amber' ? '[background:linear-gradient(90deg,#f59e0b99,#fbbf24)]' : '')
               }
               style={{ width: x.w + '%' }}
             />

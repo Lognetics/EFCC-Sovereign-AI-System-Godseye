@@ -1,4 +1,6 @@
 import { Microscope, HardDrive, FileSearch, Clock, FileCheck2, Lock, Smartphone, Cloud, Server } from 'lucide-react'
+import { useToast } from '../components/system/Toast'
+import { useModal } from '../components/system/Modal'
 import { TopBar } from '../components/layout/TopBar'
 import { Panel, InlineStat } from '../components/widgets/Panel'
 import { StatCard } from '../components/widgets/StatCard'
@@ -36,6 +38,36 @@ const DOC_AUTH = [
 ]
 
 export function Forensics() {
+  const toast = useToast()
+  const modal = useModal()
+
+  function openEvidence(e: typeof EVIDENCE[number]) {
+    modal.open({
+      title: <span>Evidence · {e.id}</span>,
+      body: (
+        <div className="space-y-3 text-[12.5px] text-slate-300">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-md border border-white/5 bg-white/[0.02] p-2.5"><div className="stat-label">Case</div><div className="mt-1 font-display text-[14px] text-cyber-200">{e.case}</div></div>
+            <div className="rounded-md border border-white/5 bg-white/[0.02] p-2.5"><div className="stat-label">Type</div><div className="mt-1 font-display text-[14px] text-cyber-200">{e.type}</div></div>
+            <div className="rounded-md border border-white/5 bg-white/[0.02] p-2.5"><div className="stat-label">Device / source</div><div className="mt-1 font-display text-[14px] text-cyber-200">{e.device}</div></div>
+            <div className="rounded-md border border-white/5 bg-white/[0.02] p-2.5"><div className="stat-label">Extracted</div><div className="mt-1 font-display text-[14px] text-cyber-200">{e.extracted}</div></div>
+          </div>
+          <div className="rounded-md border border-violet-500/30 bg-violet-500/10 p-3 font-mono text-[11px] text-slate-300">
+            <div className="mb-1 text-violet-300">integrity: verified</div>
+            <div>{e.hash}</div>
+            <div className="mt-2 text-violet-300">custody: {e.custody}</div>
+          </div>
+        </div>
+      ),
+      footer: (
+        <>
+          <button className="btn-hud" onClick={() => { modal.close(); toast.success('Exported', 'Exhibit packet downloaded') }}>Export exhibit</button>
+          <button className="btn-hud" onClick={() => { modal.close(); toast.info('Re-seal logged', 'WORM ledger updated') }}>Re-seal</button>
+        </>
+      )
+    })
+  }
+
   return (
     <div className="flex h-full flex-col">
       <TopBar
@@ -77,7 +109,7 @@ export function Forensics() {
               </thead>
               <tbody>
                 {EVIDENCE.map(e => (
-                  <tr key={e.id}>
+                  <tr key={e.id} className="cursor-pointer" onClick={() => openEvidence(e)}>
                     <td className="font-mono text-slate-400">{e.id}</td>
                     <td>{e.case}</td>
                     <td className="text-slate-200">{e.type}</td>

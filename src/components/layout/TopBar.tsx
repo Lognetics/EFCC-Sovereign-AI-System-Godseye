@@ -1,7 +1,15 @@
 import { Bell, Search, Command, Lock, Satellite, Gauge, Zap, Clock } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-export function TopBar({ title, subtitle, chips }: { title: string; subtitle?: string; chips?: { label: string; tone?: 'red' | 'amber' | 'green' | 'violet' }[] }) {
+interface TopBarProps {
+  title: string
+  subtitle?: string
+  chips?: { label: string; tone?: 'red' | 'amber' | 'green' | 'violet' }[]
+  onOpenCommand?: () => void
+  onBellClick?: () => void
+}
+
+export function TopBar({ title, subtitle, chips, onOpenCommand, onBellClick }: TopBarProps) {
   const [time, setTime] = useState(new Date())
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000)
@@ -36,24 +44,26 @@ export function TopBar({ title, subtitle, chips }: { title: string; subtitle?: s
 
       <div className="flex-1" />
 
-      {/* Command bar */}
-      <div className="relative hidden w-[360px] max-w-[35vw] items-center gap-2 rounded-sm border border-cyber-500/20 bg-ink-800/70 px-3 py-1.5 lg:flex">
+      {/* Command bar (clickable) */}
+      <button
+        onClick={onOpenCommand}
+        className="relative hidden w-[360px] max-w-[35vw] items-center gap-2 rounded-sm border border-cyber-500/20 bg-ink-800/70 px-3 py-1.5 text-left transition hover:border-cyber-400/60 hover:bg-cyber-500/5 lg:flex"
+      >
         <Search className="h-3.5 w-3.5 text-cyber-400/70" />
-        <input
-          placeholder="Query any entity, wallet, BVN, case, transaction…"
-          className="flex-1 bg-transparent font-mono text-[11.5px] text-slate-200 placeholder:text-slate-600 focus:outline-none"
-        />
+        <span className="flex-1 font-mono text-[11.5px] text-slate-500">
+          Query any entity, wallet, BVN, case, transaction…
+        </span>
         <span className="flex items-center gap-1 rounded-sm border border-cyber-500/20 bg-cyber-500/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-cyber-300">
           <Command className="h-2.5 w-2.5" /> K
         </span>
-      </div>
+      </button>
 
       {/* Status pills */}
       <div className="flex items-center gap-2">
         <StatusPill icon={<Satellite className="h-3 w-3" />} label="INGEST" value="2.89M/hr" tone="cyber" />
         <StatusPill icon={<Zap className="h-3 w-3" />} label="MODELS" value="47 live" tone="green" />
         <StatusPill icon={<Lock className="h-3 w-3" />} label="CRYPTO" value="MLS + Kyber" tone="violet" />
-        <button className="relative rounded-sm border border-cyber-500/20 bg-ink-800/60 p-1.5 text-cyber-300 transition hover:bg-cyber-500/10">
+        <button onClick={onBellClick} className="relative rounded-sm border border-cyber-500/20 bg-ink-800/60 p-1.5 text-cyber-300 transition hover:bg-cyber-500/10 hover:border-cyber-400">
           <Bell className="h-4 w-4" />
           <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 font-mono text-[9px] font-bold text-white shadow-[0_0_10px_rgba(239,68,68,0.5)]">
             12
@@ -61,7 +71,7 @@ export function TopBar({ title, subtitle, chips }: { title: string; subtitle?: s
         </button>
       </div>
 
-      {/* Demo marker (search-arrival safety) */}
+      {/* Demo marker */}
       <div className="hidden items-center gap-1.5 rounded-sm border border-red-500/40 bg-red-500/10 px-2 py-1 font-mono text-[9.5px] uppercase tracking-widest text-red-300 md:inline-flex" title="Demonstration UI · synthetic data · not an official EFCC product">
         <span className="blink-dot h-1 w-1 bg-red-400 text-red-400" />
         DEMO

@@ -1,4 +1,6 @@
 import { Globe2, Plane, Gavel, FileSignature, Handshake, Coins } from 'lucide-react'
+import { useToast } from '../components/system/Toast'
+import { useModal } from '../components/system/Modal'
 import { TopBar } from '../components/layout/TopBar'
 import { Panel } from '../components/widgets/Panel'
 import { StatCard } from '../components/widgets/StatCard'
@@ -31,6 +33,35 @@ const MLATS = [
 ]
 
 export function GlobalBridge() {
+  const toast = useToast()
+  const modal = useModal()
+
+  function openMlat(m: typeof MLATS[number]) {
+    modal.open({
+      title: <span>MLAT · {m.id}</span>,
+      body: (
+        <div className="space-y-3 text-[12.5px] text-slate-300">
+          <div>
+            <div className="font-display text-[16px] text-slate-100">{m.subj}</div>
+            <div className="mt-1 font-mono text-[10.5px] uppercase tracking-widest text-slate-500">Counterpart: {m.country} · Submitted {m.submitted}</div>
+          </div>
+          <div className="rounded-md border border-cyber-500/20 bg-cyber-500/5 p-3">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-cyber-300">Current status</div>
+            <div className="mt-1 font-display text-[15px] text-cyber-200">{m.status}</div>
+            <div className="mt-1 text-[11.5px] text-slate-400">Outcome: {m.outcome}</div>
+          </div>
+          <p>Secure channel is encrypted end-to-end. All inter-agency communication is logged to the WORM audit ledger with cryptographic receipts.</p>
+        </div>
+      ),
+      footer: (
+        <>
+          <button className="btn-hud" onClick={() => { modal.close(); toast.info('Status requested', `Follow-up dispatched to ${m.country}`) }}>Request update</button>
+          <button className="btn-hud" onClick={() => { modal.close(); toast.success('Doc packet signed', 'Dilithium3 signature · queued for I-24/7') }}>Send packet</button>
+        </>
+      )
+    })
+  }
+
   return (
     <div className="flex h-full flex-col">
       <TopBar
@@ -114,7 +145,7 @@ export function GlobalBridge() {
               </thead>
               <tbody>
                 {MLATS.map(m => (
-                  <tr key={m.id}>
+                  <tr key={m.id} className="cursor-pointer" onClick={() => openMlat(m)}>
                     <td className="font-mono text-slate-500">{m.id}</td>
                     <td className="text-slate-200">{m.subj}</td>
                     <td>{m.country}</td>
